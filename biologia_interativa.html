@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biologia — Estudo Interativo</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --verde: #1D9E75;
+    --verde-claro: #E1F5EE;
+    --verde-escuro: #085041;
+    --roxo: #7F77DD;
+    --roxo-claro: #EEEDFE;
+    --roxo-escuro: #3C3489;
+    --coral: #D85A30;
+    --coral-claro: #FAECE7;
+    --amarelo: #EF9F27;
+    --amarelo-claro: #FAEEDA;
+    --azul: #378ADD;
+    --azul-claro: #E6F1FB;
+    --cinza-bg: #f7f6f2;
+    --cinza-borda: #e0ddd4;
+    --texto: #1a1a18;
+    --texto-sec: #555550;
+    --branco: #ffffff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cinza-bg);
+    color: var(--texto);
+    line-height: 1.7;
+  }
+
+  header {
+    background: var(--verde-escuro);
+    color: white;
+    padding: 3rem 2rem 2.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: -40px;
+    width: 150px; height: 150px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+  }
+  header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    letter-spacing: -1px;
+    position: relative;
+  }
+  header p {
+    font-size: 1.05rem;
+    opacity: 0.8;
+    margin-top: 0.5rem;
+    position: relative;
+  }
+
+  nav {
+    background: var(--branco);
+    border-bottom: 1px solid var(--cinza-borda);
+    padding: 0 1.5rem;
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  nav a {
+    text-decoration: none;
+    color: var(--texto-sec);
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 1rem 1.1rem;
+    white-space: nowrap;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+  }
+  nav a:hover { color: var(--verde); border-bottom-color: var(--verde); }
+  nav a.ativo { color: var(--verde-escuro); border-bottom-color: var(--verde); }
+
+  main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  section {
+    margin-bottom: 3rem;
+    scroll-margin-top: 60px;
+  }
+
+  .secao-titulo {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--verde-escuro);
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .secao-titulo span.num {
+    background: var(--verde);
+    color: white;
+    font-size: 0.8rem;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  .card {
+    background: var(--branco);
+    border-radius: 12px;
+    border: 1px solid var(--cinza-borda);
+    padding: 1.25rem;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(0,0,0,0.07); }
+  .card-titulo {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .card p { font-size: 0.9rem; color: var(--texto-sec); line-height: 1.6; }
+
+  .badge {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin-bottom: 0.5rem;
+  }
+  .badge-verde { background: var(--verde-claro); color: var(--verde-escuro); }
+  .badge-roxo { background: var(--roxo-claro); color: var(--roxo-escuro); }
+  .badge-coral { background: var(--coral-claro); color: #6b2010; }
+  .badge-amarelo { background: var(--amarelo-claro); color: #5a3500; }
+  .badge-azul { background: var(--azul-claro); color: #0c447c; }
+
+  .organela-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.75rem;
+  }
+  .organela-btn {
+    background: var(--branco);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 10px;
+    padding: 1rem;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .organela-btn:hover { border-color: var(--verde); background: var(--verde-claro); }
+  .organela-btn.ativo { border-color: var(--verde); background: var(--verde-claro); box-shadow: 0 0 0 2px rgba(29,158,117,0.2); }
+  .organela-btn .nome { font-weight: 600; font-size: 0.9rem; color: var(--verde-escuro); }
+  .organela-btn .emoji { font-size: 1.4rem; display: block; margin-bottom: 4px; }
+
+  .organela-detalhe {
+    background: var(--branco);
+    border: 1px solid var(--verde);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+    display: none;
+    animation: fadeIn 0.3s ease;
+  }
+  .organela-detalhe.visivel { display: block; }
+  .organela-detalhe h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; color: var(--verde-escuro); margin-bottom: 0.75rem; }
+  .organela-detalhe p { font-size: 0.92rem; color: var(--texto-sec); margin-bottom: 0.5rem; }
+  .organela-detalhe .funcao {
+    background: var(--verde-claro);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin: 0.75rem 0;
+    font-size: 0.92rem;
+    color: var(--verde-escuro);
+    font-weight: 500;
+  }
+
+  .ciclo-wrap {
+    background: var(--branco);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 12px;
+    padding: 1.5rem;
+  }
+  .fases-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.25rem; }
+  .fase-btn {
+    background: var(--cinza-bg);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--texto-sec);
+    transition: all 0.2s;
+  }
+  .fase-btn:hover, .fase-btn.ativo { background: var(--roxo-claro); border-color: var(--roxo); color: var(--roxo-escuro); }
+  .fase-info {
+    background: var(--roxo-claro);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    font-size: 0.92rem;
+    color: var(--roxo-escuro);
+    min-height: 80px;
+    animation: fadeIn 0.2s ease;
+  }
+
+  .tabela-comp {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    background: var(--branco);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--cinza-borda);
+  }
+  .tabela-comp th { padding: 0.9rem 1rem; text-align: left; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; }
+  .tabela-comp th:nth-child(2) { background: var(--verde-claro); color: var(--verde-escuro); }
+  .tabela-comp th:nth-child(3) { background: var(--roxo-claro); color: var(--roxo-escuro); }
+  .tabela-comp th:first-child { background: var(--cinza-bg); color: var(--texto-sec); }
+  .tabela-comp td { padding: 0.75rem 1rem; border-top: 1px solid var(--cinza-borda); }
+  .tabela-comp td:first-child { font-weight: 500; color: var(--texto-sec); font-size: 0.85rem; }
+  .tabela-comp tr:hover td { background: rgba(0,0,0,0.02); }
+
+  .atividade-wrap {
+    background: var(--branco);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 14px;
+    padding: 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+  .atividade-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem; }
+  .atividade-num {
+    background: var(--coral);
+    color: white;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+  }
+  .atividade-header h3 { font-family: 'Syne', sans-serif; font-size: 1.05rem; font-weight: 700; color: var(--texto); }
+  .pergunta { font-size: 0.95rem; color: var(--texto); margin-bottom: 1rem; font-weight: 500; }
+  .opcoes { display: flex; flex-direction: column; gap: 0.5rem; }
+  .opcao {
+    background: var(--cinza-bg);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+    text-align: left;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--texto);
+  }
+  .opcao:hover { border-color: var(--azul); background: var(--azul-claro); }
+  .opcao.correta { background: var(--verde-claro) !important; border-color: var(--verde) !important; color: var(--verde-escuro) !important; }
+  .opcao.errada { background: var(--coral-claro) !important; border-color: var(--coral) !important; color: #6b2010 !important; }
+  .feedback {
+    margin-top: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 500;
+    display: none;
+  }
+  .feedback.mostrar { display: block; }
+  .feedback.ok { background: var(--verde-claro); color: var(--verde-escuro); }
+  .feedback.erro { background: var(--coral-claro); color: #6b2010; }
+
+  .pontuacao-bar { background: var(--cinza-bg); border-radius: 8px; height: 8px; overflow: hidden; margin-bottom: 0.5rem; }
+  .pontuacao-fill { height: 100%; background: var(--verde); border-radius: 8px; transition: width 0.5s ease; width: 0%; }
+  .pontuacao-texto { font-size: 0.85rem; color: var(--texto-sec); text-align: right; }
+
+  .hierarquia { display: flex; flex-direction: column; align-items: flex-start; gap: 0; }
+  .nivel {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.6rem 1rem;
+    background: var(--branco);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 8px;
+    width: 100%; max-width: 400px;
+    transition: all 0.2s;
+  }
+  .nivel:hover { border-color: var(--verde); }
+  .seta { text-align: center; color: var(--verde); font-size: 1.2rem; padding: 0.1rem 0 0.1rem 1.5rem; }
+  .nivel-emoji { font-size: 1.2rem; }
+  .nivel-nome { font-weight: 600; font-size: 0.9rem; }
+  .nivel-ex { font-size: 0.78rem; color: var(--texto-sec); }
+
+  .matching-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+  .matching-item {
+    background: var(--cinza-bg);
+    border: 2px solid var(--cinza-borda);
+    border-radius: 8px;
+    padding: 0.65rem 0.9rem;
+    cursor: pointer;
+    font-size: 0.88rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    text-align: center;
+    user-select: none;
+  }
+  .matching-item:hover { border-color: var(--azul); background: var(--azul-claro); }
+  .matching-item.selecionado { border-color: var(--amarelo); background: var(--amarelo-claro); }
+  .matching-item.conectado { border-color: var(--verde); background: var(--verde-claro); color: var(--verde-escuro); cursor: default; }
+  .matching-item.errado { border-color: var(--coral); background: var(--coral-claro); animation: shake 0.3s; }
+  .matching-msg { text-align: center; font-size: 0.9rem; color: var(--texto-sec); min-height: 30px; }
+  .btn-reset {
+    background: var(--cinza-bg);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 8px;
+    padding: 0.5rem 1.2rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--texto-sec);
+    transition: all 0.2s;
+    display: block;
+    margin: 0 auto;
+  }
+  .btn-reset:hover { background: var(--verde-claro); border-color: var(--verde); color: var(--verde-escuro); }
+
+  .mnemonic-box {
+    background: var(--amarelo-claro);
+    border: 1px solid #EF9F27;
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .mnemonic-box h4 { font-family: 'Syne', sans-serif; color: #5a3500; font-size: 1rem; margin-bottom: 0.75rem; }
+  .mnemonic-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.5rem; }
+  .mnemonic-item {
+    background: white;
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .mnemonic-item strong { color: var(--verde-escuro); }
+  .mnemonic-item span { color: var(--texto-sec); }
+
+  .progresso-topo {
+    background: var(--branco);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .progresso-topo .label { font-size: 0.85rem; color: var(--texto-sec); white-space: nowrap; }
+  .prog-bar { flex: 1; height: 6px; background: var(--cinza-bg); border-radius: 3px; overflow: hidden; }
+  .prog-fill { height: 100%; background: var(--verde); border-radius: 3px; width: 0%; transition: width 1s; }
+  .prog-pct { font-size: 0.85rem; font-weight: 600; color: var(--verde-escuro); white-space: nowrap; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+
+  @media (max-width: 600px) {
+    .matching-cols { grid-template-columns: 1fr; }
+    nav a { padding: 0.8rem 0.75rem; font-size: 0.78rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🧬 Biologia Celular</h1>
+  <p>Estudo interativo completo para sua prova</p>
+</header>
+
+<nav id="nav-principal">
+  <a href="#teoria" class="ativo">Teoria Celular</a>
+  <a href="#celulas">Células</a>
+  <a href="#organelas">Organelas</a>
+  <a href="#metabolismo">Metabolismo</a>
+  <a href="#reproducao">Reprodução</a>
+  <a href="#divisao">Mitose & Meiose</a>
+  <a href="#organizacao">Organização</a>
+  <a href="#atividades">Atividades</a>
+</nav>
+
+<main>
+
+  <div class="progresso-topo">
+    <span class="label">Seu progresso no quiz</span>
+    <div class="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
+    <span class="prog-pct" id="prog-pct">0/10</span>
+  </div>
+
+  <section id="teoria">
+    <h2 class="secao-titulo"><span class="num">1</span> Teoria Celular</h2>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-titulo"><span>🔬</span> Todo ser vivo é formado por células</div>
+        <p>Você tem trilhões de células. Plantas também. Bactérias são formadas por apenas <strong>1 célula</strong>.</p>
+      </div>
+      <div class="card">
+        <div class="card-titulo"><span>⚡</span> A célula é a menor unidade da vida</div>
+        <p>É a menor parte capaz de realizar <strong>funções vitais</strong> de forma independente.</p>
+      </div>
+      <div class="card">
+        <div class="card-titulo"><span>♻️</span> Toda célula vem de outra célula</div>
+        <p>Nenhuma célula surge do nada. Toda nova célula é originada de uma célula preexistente.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="celulas">
+    <h2 class="secao-titulo"><span class="num">2</span> Procarionte vs Eucarionte</h2>
+    <div class="grid-2">
+      <div class="card">
+        <span class="badge badge-coral">Procarionte</span>
+        <div class="card-titulo">🦠 Célula Simples</div>
+        <p>❌ Sem núcleo organizado<br>❌ Sem organelas membranosas<br>✅ DNA espalhado no citoplasma<br><br><strong>Exemplo:</strong> Bactérias</p>
+      </div>
+      <div class="card">
+        <span class="badge badge-verde">Eucarionte</span>
+        <div class="card-titulo">🌱🐾 Célula Complexa</div>
+        <p>✅ Núcleo verdadeiro<br>✅ Possui organelas<br>✅ DNA dentro do núcleo<br><br><strong>Exemplos:</strong> Animais, plantas, fungos</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="organelas">
+    <h2 class="secao-titulo"><span class="num">3</span> Organelas — Clique para aprender</h2>
+    <div class="organela-grid" id="organela-grid">
+      <button class="organela-btn" onclick="mostrarOrganela('mitocondria', this)"><span class="emoji">⚡</span><span class="nome">Mitocôndria</span></button>
+      <button class="organela-btn" onclick="mostrarOrganela('cloroplasto', this)"><span class="emoji">🌿</span><span class="nome">Cloroplasto</span></button>
+      <button class="organela-btn" onclick="mostrarOrganela('nucleo', this)"><span class="emoji">🎯</span><span class="nome">Núcleo</span></button>
+      <button class="organela-btn" onclick="mostrarOrganela('golgi', this)"><span class="emoji">📦</span><span class="nome">Complexo de Golgi</span></button>
+      <button class="organela-btn" onclick="mostrarOrganela('lisossomo', this)"><span class="emoji">🗑️</span><span class="nome">Lisossomo</span></button>
+      <button class="organela-btn" onclick="mostrarOrganela('rer', this)"><span class="emoji">🏗️</span><span class="nome">Retículo Rugoso</span></button>
+      <button class="organela-btn" onclick="mostrarOrganela('rel', this)"><span class="emoji">🧪</span><span class="nome">Retículo Liso</span></button>
+      <button class="organela-btn" onclick="mostrarOrganela('centriolo', this)"><span class="emoji">🔩</span><span class="nome">Centríolo</span></button>
+      <button class="organela-btn" onclick="mostrarOrganela('citoesqueleto', this)"><span class="emoji">🏛️</span><span class="nome">Citoesqueleto</span></button>
+    </div>
+    <div class="organela-detalhe" id="organela-detalhe">
+      <h3 id="det-titulo"></h3>
+      <div class="funcao" id="det-funcao"></div>
+      <p id="det-desc"></p>
+      <p id="det-extra" style="margin-top:0.5rem; font-size:0.85rem; color:#888;"></p>
+    </div>
+    <div class="mnemonic-box" style="margin-top:1.5rem">
+      <h4>🧠 Decoração rápida — Associações chave</h4>
+      <div class="mnemonic-grid">
+        <div class="mnemonic-item"><strong>⚡ Mitocôndria</strong><span>→ Energia (ATP)</span></div>
+        <div class="mnemonic-item"><strong>🌿 Cloroplasto</strong><span>→ Fotossíntese</span></div>
+        <div class="mnemonic-item"><strong>🎯 Núcleo</strong><span>→ DNA / Comando</span></div>
+        <div class="mnemonic-item"><strong>📦 Golgi</strong><span>→ Empacota</span></div>
+        <div class="mnemonic-item"><strong>🗑️ Lisossomo</strong><span>→ Digestão celular</span></div>
+        <div class="mnemonic-item"><strong>🏗️ RER</strong><span>→ Proteínas</span></div>
+        <div class="mnemonic-item"><strong>🧪 REL</strong><span>→ Lipídios</span></div>
+        <div class="mnemonic-item"><strong>🔩 Centríolo</strong><span>→ Divisão celular</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="metabolismo">
+    <h2 class="secao-titulo"><span class="num">4</span> Anabolismo & Catabolismo</h2>
+    <div class="grid-2">
+      <div class="card">
+        <span class="badge badge-verde">Anabolismo</span>
+        <div class="card-titulo">🧱 CONSTRUIR</div>
+        <p>A célula monta moléculas maiores a partir de menores.<br><br><strong>Gasta</strong> energia (ATP).<br><strong>Exemplo:</strong> produção de proteínas.</p>
+      </div>
+      <div class="card">
+        <span class="badge badge-coral">Catabolismo</span>
+        <div class="card-titulo">💥 QUEBRAR</div>
+        <p>A célula quebra moléculas grandes em menores.<br><br><strong>Libera</strong> energia (ATP).<br><strong>Exemplo:</strong> digestão.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="reproducao">
+    <h2 class="secao-titulo"><span class="num">5</span> Reprodução Sexuada & Assexuada</h2>
+    <div class="grid-2">
+      <div class="card">
+        <span class="badge badge-azul">Assexuada</span>
+        <div class="card-titulo">🔁 Sem gametas</div>
+        <p>Um único organismo gera outro.<br><br>✅ Rápida<br>⚠️ Descendentes idênticos<br><strong>Exemplo:</strong> Bactérias</p>
+      </div>
+      <div class="card">
+        <span class="badge badge-roxo">Sexuada</span>
+        <div class="card-titulo">💑 Com gametas</div>
+        <p>União de espermatozoide + óvulo.<br><br>✅ Alta variabilidade genética<br>✅ Favorece adaptação da espécie</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="divisao">
+    <h2 class="secao-titulo"><span class="num">6</span> Mitose & Meiose</h2>
+    <div class="ciclo-wrap" style="margin-bottom:1rem">
+      <p style="font-size:0.88rem; color:var(--texto-sec); margin-bottom:1rem">Clique em cada fase para ver o que acontece:</p>
+      <div class="fases-row">
+        <button class="fase-btn" onclick="mostrarFase('interfase', this)">Interfase</button>
+        <button class="fase-btn" onclick="mostrarFase('profase', this)">Prófase</button>
+        <button class="fase-btn" onclick="mostrarFase('metafase', this)">Metáfase</button>
+        <button class="fase-btn" onclick="mostrarFase('anafase', this)">Anáfase</button>
+        <button class="fase-btn" onclick="mostrarFase('telofase', this)">Telófase</button>
+        <button class="fase-btn" onclick="mostrarFase('citocinese', this)">Citocinese</button>
+      </div>
+      <div class="fase-info" id="fase-info">👆 Selecione uma fase acima para ver o que acontece.</div>
+    </div>
+    <table class="tabela-comp">
+      <thead>
+        <tr>
+          <th>Característica</th>
+          <th>🟢 Mitose</th>
+          <th>🟣 Meiose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Células resultantes</td><td>2 células</td><td>4 células</td></tr>
+        <tr><td>São iguais?</td><td>✅ Idênticas</td><td>❌ Diferentes</td></tr>
+        <tr><td>Cromossomos</td><td>Mantém o número</td><td>Reduz pela metade</td></tr>
+        <tr><td>Função</td><td>Crescimento / cicatrização</td><td>Forma gametas</td></tr>
+        <tr><td>Crossing over?</td><td>❌ Não ocorre</td><td>✅ Ocorre</td></tr>
+      </tbody>
+    </table>
+    <div class="card" style="margin-top:1rem; border-color:#EF9F27;">
+      <div class="card-titulo">🔀 Crossing Over</div>
+      <p>Ocorre durante a <strong>meiose</strong>. Troca de pedaços entre cromossomos homólogos, gerando variabilidade genética. É por isso que irmãos são diferentes!</p>
+    </div>
+  </section>
+
+  <section id="organizacao">
+    <h2 class="secao-titulo"><span class="num">7</span> Organização dos Seres Vivos</h2>
+    <p style="font-size:0.9rem; color:var(--texto-sec); margin-bottom:1rem">Do menor para o maior:</p>
+    <div class="hierarquia">
+      <div class="nivel"><span class="nivel-emoji">⚛️</span><div><div class="nivel-nome">Átomo</div><div class="nivel-ex">Ex: carbono, oxigênio</div></div></div>
+      <div class="seta">↓</div>
+      <div class="nivel"><span class="nivel-emoji">💧</span><div><div class="nivel-nome">Molécula</div><div class="nivel-ex">Ex: água, glicose</div></div></div>
+      <div class="seta">↓</div>
+      <div class="nivel"><span class="nivel-emoji">⚡</span><div><div class="nivel-nome">Organela</div><div class="nivel-ex">Ex: mitocôndria</div></div></div>
+      <div class="seta">↓</div>
+      <div class="nivel"><span class="nivel-emoji">🔬</span><div><div class="nivel-nome">Célula</div><div class="nivel-ex">Unidade da vida</div></div></div>
+      <div class="seta">↓</div>
+      <div class="nivel"><span class="nivel-emoji">🧵</span><div><div class="nivel-nome">Tecido</div><div class="nivel-ex">Ex: tecido muscular</div></div></div>
+      <div class="seta">↓</div>
+      <div class="nivel"><span class="nivel-emoji">❤️</span><div><div class="nivel-nome">Órgão</div><div class="nivel-ex">Ex: coração</div></div></div>
+      <div class="seta">↓</div>
+      <div class="nivel"><span class="nivel-emoji">🔄</span><div><div class="nivel-nome">Sistema</div><div class="nivel-ex">Ex: sistema digestório</div></div></div>
+      <div class="seta">↓</div>
+      <div class="nivel"><span class="nivel-emoji">🧑</span><div><div class="nivel-nome">Organismo</div><div class="nivel-ex">Ex: ser humano</div></div></div>
+    </div>
+  </section>
+
+  <section id="atividades">
+    <h2 class="secao-titulo"><span class="num">8</span> Atividades Interativas</h2>
+
+    <div class="atividade-wrap" id="q1">
+      <div class="atividade-header"><div class="atividade-num">1</div><h3>Quiz — Organelas</h3></div>
+      <p class="pergunta">Qual organela é responsável pela produção de energia (ATP)?</p>
+      <div class="opcoes">
+        <button class="opcao" onclick="responder(this, false, 'q1', 'A mitocôndria realiza a respiração celular e produz ATP.')">Núcleo</button>
+        <button class="opcao" onclick="responder(this, true, 'q1', 'Correto! A mitocôndria realiza a respiração celular convertendo glicose + O₂ em ATP.')">Mitocôndria</button>
+        <button class="opcao" onclick="responder(this, false, 'q1', 'A mitocôndria realiza a respiração celular e produz ATP.')">Lisossomo</button>
+        <button class="opcao" onclick="responder(this, false, 'q1', 'A mitocôndria realiza a respiração celular e produz ATP.')">Complexo de Golgi</button>
+      </div>
+      <div class="feedback" id="fb-q1"></div>
+    </div>
+
+    <div class="atividade-wrap" id="q2">
+      <div class="atividade-header"><div class="atividade-num">2</div><h3>Quiz — Células</h3></div>
+      <p class="pergunta">Qual das opções é uma célula PROCARIONTE?</p>
+      <div class="opcoes">
+        <button class="opcao" onclick="responder(this, false, 'q2', 'Fungos e animais são eucariontes — possuem núcleo verdadeiro.')">Fungo</button>
+        <button class="opcao" onclick="responder(this, false, 'q2', 'Fungos e animais são eucariontes — possuem núcleo verdadeiro.')">Célula animal</button>
+        <button class="opcao" onclick="responder(this, true, 'q2', 'Correto! Bactérias são procariontes: sem núcleo organizado, sem organelas membranosas.')">Bactéria</button>
+        <button class="opcao" onclick="responder(this, false, 'q2', 'Algas são eucariontes. Bactérias são procariontes.')">Alga</button>
+      </div>
+      <div class="feedback" id="fb-q2"></div>
+    </div>
+
+    <div class="atividade-wrap" id="q3">
+      <div class="atividade-header"><div class="atividade-num">3</div><h3>Quiz — Divisão Celular</h3></div>
+      <p class="pergunta">Quantas células são formadas ao final da MEIOSE?</p>
+      <div class="opcoes">
+        <button class="opcao" onclick="responder(this, false, 'q3', 'Mitose gera 2 células. Meiose gera 4 células haploides.')">1</button>
+        <button class="opcao" onclick="responder(this, false, 'q3', 'Mitose gera 2 células. Meiose gera 4 células haploides.')">2</button>
+        <button class="opcao" onclick="responder(this, false, 'q3', 'Mitose gera 2 células. Meiose gera 4 células haploides.')">3</button>
+        <button class="opcao" onclick="responder(this, true, 'q3', 'Correto! A meiose produz 4 células haploides (gametas) diferentes entre si.')">4</button>
+      </div>
+      <div class="feedback" id="fb-q3"></div>
+    </div>
+
+    <div class="atividade-wrap" id="q4">
+      <div class="atividade-header"><div class="atividade-num">4</div><h3>Quiz — Metabolismo</h3></div>
+      <p class="pergunta">O processo de produção de proteínas é um exemplo de:</p>
+      <div class="opcoes">
+        <button class="opcao" onclick="responder(this, true, 'q4', 'Correto! Anabolismo = construir. Produzir proteínas é anabolismo, consome energia.')">Anabolismo</button>
+        <button class="opcao" onclick="responder(this, false, 'q4', 'Anabolismo = construir moléculas maiores (ex: proteínas). Catabolismo = quebrar.')">Catabolismo</button>
+        <button class="opcao" onclick="responder(this, false, 'q4', 'Fotossíntese é outro processo. Produção de proteínas é anabolismo.')">Fotossíntese</button>
+        <button class="opcao" onclick="responder(this, false, 'q4', 'Respiração celular libera energia. Produção de proteínas é anabolismo.')">Respiração celular</button>
+      </div>
+      <div class="feedback" id="fb-q4"></div>
+    </div>
+
+    <div class="atividade-wrap" id="q5">
+      <div class="atividade-header"><div class="atividade-num">5</div><h3>Quiz — Organelas</h3></div>
+      <p class="pergunta">O Retículo Endoplasmático Rugoso (RER) produz:</p>
+      <div class="opcoes">
+        <button class="opcao" onclick="responder(this, false, 'q5', 'Lipídios são produzidos pelo REL (Retículo Liso). O RER produz proteínas.')">Lipídios</button>
+        <button class="opcao" onclick="responder(this, true, 'q5', 'Correto! O RER tem ribossomos grudados e é especializado na síntese de proteínas.')">Proteínas</button>
+        <button class="opcao" onclick="responder(this, false, 'q5', 'ATP é produzido pela mitocôndria. O RER produz proteínas.')">ATP</button>
+        <button class="opcao" onclick="responder(this, false, 'q5', 'Glicose é produto da fotossíntese. O RER produz proteínas.')">Glicose</button>
+      </div>
+      <div class="feedback" id="fb-q5"></div>
+    </div>
+
+    <div class="atividade-wrap" id="q6">
+      <div class="atividade-header"><div class="atividade-num">6</div><h3>Quiz — Crossing Over</h3></div>
+      <p class="pergunta">O crossing over ocorre durante qual processo?</p>
+      <div class="opcoes">
+        <button class="opcao" onclick="responder(this, false, 'q6', 'Na mitose não há crossing over. Ele ocorre na meiose.')">Mitose</button>
+        <button class="opcao" onclick="responder(this, true, 'q6', 'Correto! O crossing over ocorre na meiose — troca de pedaços entre cromossomos homólogos.')">Meiose</button>
+        <button class="opcao" onclick="responder(this, false, 'q6', 'O crossing over não ocorre na interfase. Ele ocorre durante a meiose.')">Interfase</button>
+        <button class="opcao" onclick="responder(this, false, 'q6', 'O crossing over não ocorre na citocinese. Ele ocorre na meiose.')">Citocinese</button>
+      </div>
+      <div class="feedback" id="fb-q6"></div>
+    </div>
+
+    <div class="atividade-wrap" id="q7">
+      <div class="atividade-header"><div class="atividade-num">7</div><h3>Quiz — Organização</h3></div>
+      <p class="pergunta">Qual é a ordem correta de organização (do menor para o maior)?</p>
+      <div class="opcoes">
+        <button class="opcao" onclick="responder(this, false, 'q7', 'A ordem correta é: Átomo → Molécula → Organela → Célula → Tecido → Órgão → Sistema → Organismo.')">Célula → Tecido → Átomo → Organismo</button>
+        <button class="opcao" onclick="responder(this, true, 'q7', 'Correto! Átomo → Molécula → Organela → Célula → Tecido → Órgão → Sistema → Organismo.')">Átomo → Molécula → Organela → Célula</button>
+        <button class="opcao" onclick="responder(this, false, 'q7', 'A ordem correta começa pelo Átomo, não pela Molécula.')">Molécula → Átomo → Célula → Tecido</button>
+        <button class="opcao" onclick="responder(this, false, 'q7', 'Organelas são menores que células. A ordem é Átomo → Molécula → Organela → Célula.')">Organela → Molécula → Átomo → Célula</button>
+      </div>
+      <div class="feedback" id="fb-q7"></div>
+    </div>
+
+    <div class="atividade-wrap" id="q8">
+      <div class="atividade-header"><div class="atividade-num">8</div><h3>Quiz — Cloroplasto</h3></div>
+      <p class="pergunta">O cloroplasto está presente em:</p>
+      <div class="opcoes">
+        <button class="opcao" onclick="responder(this, false, 'q8', 'Animais não possuem cloroplastos. Eles estão em vegetais e algas.')">Apenas em animais</button>
+        <button class="opcao" onclick="responder(this, false, 'q8', 'Bactérias são procariontes e não possuem organelas como o cloroplasto.')">Apenas em bactérias</button>
+        <button class="opcao" onclick="responder(this, true, 'q8', 'Correto! Cloroplastos estão em vegetais e algas — os que realizam fotossíntese.')">Vegetais e algas</button>
+        <button class="opcao" onclick="responder(this, false, 'q8', 'Animais não possuem cloroplastos.')">Animais e plantas</button>
+      </div>
+      <div class="feedback" id="fb-q8"></div>
+    </div>
+
+    <div class="atividade-wrap" id="q9">
+      <div class="atividade-header"><div class="atividade-num">9</div><h3>Quiz — Mitose</h3></div>
+      <p class="pergunta">Em qual fase da mitose os cromossomos ficam alinhados no centro da célula?</p>
+      <div class="opcoes">
+        <button class="opcao" onclick="responder(this, false, 'q9', 'Na Prófase os cromossomos aparecem e o fuso começa a se formar.')">Prófase</button>
+        <button class="opcao" onclick="responder(this, true, 'q9', 'Correto! Na Metáfase os cromossomos ficam alinhados no meio da célula.')">Metáfase</button>
+        <button class="opcao" onclick="responder(this, false, 'q9', 'Na Anáfase as cromátides irmãs se separam.')">Anáfase</button>
+        <button class="opcao" onclick="responder(this, false, 'q9', 'Na Telófase dois núcleos são formados.')">Telófase</button>
+      </div>
+      <div class="feedback" id="fb-q9"></div>
+    </div>
+
+    <div class="atividade-wrap" id="q10">
+      <div class="atividade-header"><div class="atividade-num">10</div><h3>Quiz — Lisossomo</h3></div>
+      <p class="pergunta">Qual é a principal função do lisossomo?</p>
+      <div class="opcoes">
+        <button class="opcao" onclick="responder(this, false, 'q10', 'Produção de energia é função da mitocôndria.')">Produzir energia</button>
+        <button class="opcao" onclick="responder(this, false, 'q10', 'Produção de proteínas é função do RER.')">Produzir proteínas</button>
+        <button class="opcao" onclick="responder(this, false, 'q10', 'Fotossíntese é realizada no cloroplasto.')">Realizar fotossíntese</button>
+        <button class="opcao" onclick="responder(this, true, 'q10', 'Correto! O lisossomo possui enzimas digestivas que destroem bactérias e reciclam organelas velhas.')">Digestão celular</button>
+      </div>
+      <div class="feedback" id="fb-q10"></div>
+    </div>
+
+    <div class="atividade-wrap">
+      <div class="atividade-header">
+        <div class="atividade-num" style="background:var(--roxo)">🔗</div>
+        <h3>Jogo de Associação — Organela com Função</h3>
+      </div>
+      <p class="pergunta">Clique em uma organela e depois em sua função correspondente.</p>
+      <div class="matching-cols">
+        <div style="display:flex;flex-direction:column;gap:0.5rem">
+          <p style="font-size:0.8rem;color:var(--texto-sec);font-weight:600;margin-bottom:0.25rem">ORGANELAS</p>
+          <div class="matching-item" id="mo1" onclick="selecionarMatch('mo1','organela')">Mitocôndria</div>
+          <div class="matching-item" id="mo2" onclick="selecionarMatch('mo2','organela')">Cloroplasto</div>
+          <div class="matching-item" id="mo3" onclick="selecionarMatch('mo3','organela')">Golgi</div>
+          <div class="matching-item" id="mo4" onclick="selecionarMatch('mo4','organela')">Lisossomo</div>
+          <div class="matching-item" id="mo5" onclick="selecionarMatch('mo5','organela')">Núcleo</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:0.5rem">
+          <p style="font-size:0.8rem;color:var(--texto-sec);font-weight:600;margin-bottom:0.25rem">FUNÇÕES</p>
+          <div class="matching-item" id="mf3" onclick="selecionarMatch('mf3','funcao')">Empacotar substâncias</div>
+          <div class="matching-item" id="mf1" onclick="selecionarMatch('mf1','funcao')">Produzir energia (ATP)</div>
+          <div class="matching-item" id="mf5" onclick="selecionarMatch('mf5','funcao')">Armazenar DNA</div>
+          <div class="matching-item" id="mf2" onclick="selecionarMatch('mf2','funcao')">Realizar fotossíntese</div>
+          <div class="matching-item" id="mf4" onclick="selecionarMatch('mf4','funcao')">Digestão celular</div>
+        </div>
+      </div>
+      <div class="matching-msg" id="matching-msg">Selecione uma organela para começar!</div>
+      <button class="btn-reset" onclick="resetMatch()">↺ Reiniciar jogo</button>
+    </div>
+
+  </section>
+</main>
+
+<script>
+const organelas = {
+  mitocondria: { titulo: '⚡ Mitocôndria', funcao: 'Produzir energia (ATP) através da respiração celular', desc: 'A célula pega glicose + oxigênio e produz ATP. Sem mitocôndria, a célula não teria energia para funcionar.', extra: '💡 Células que gastam muita energia (como músculos) possuem muitas mitocôndrias!' },
+  cloroplasto: { titulo: '🌿 Cloroplasto', funcao: 'Realizar fotossíntese — presente apenas em vegetais e algas', desc: 'A planta usa água + CO₂ + luz solar para produzir glicose + oxigênio. Possui clorofila — o pigmento verde.', extra: '💡 É o cloroplasto que dá a cor verde às folhas!' },
+  nucleo: { titulo: '🎯 Núcleo', funcao: 'Centro de comando — controla atividades e armazena DNA', desc: 'Dentro do DNA estão todas as informações genéticas. O núcleo direciona o que a célula faz.', extra: '💡 Apenas células eucariontes têm núcleo verdadeiro.' },
+  golgi: { titulo: '📦 Complexo de Golgi', funcao: 'Modificar, armazenar, empacotar e secretar substâncias', desc: 'É como um centro de empacotamento e entrega da célula. Também produz lisossomos.', extra: '💡 Pense no Golgi como o "correio" da célula!' },
+  lisossomo: { titulo: '🗑️ Lisossomo', funcao: 'Digestão celular — destrói bactérias e recicla organelas velhas', desc: 'Possui enzimas digestivas poderosas. Elimina invasores e faz a limpeza da célula.', extra: '💡 Sem lisossomos a célula acumularia lixo e morreria!' },
+  rer: { titulo: '🏗️ Retículo Endoplasmático Rugoso (RER)', funcao: 'Produzir proteínas (possui ribossomos)', desc: 'É "rugoso" porque os ribossomos ficam grudados na sua superfície.', extra: '💡 RER = Rugoso = Ribossomos = pRoteína (tudo com R!)' },
+  rel: { titulo: '🧪 Retículo Endoplasmático Liso (REL)', funcao: 'Produzir lipídios e realizar desintoxicação celular', desc: 'Não possui ribossomos. Muito presente no fígado, onde realiza desintoxicação.', extra: '💡 REL = Liso = Lipídios (ambos com L!)' },
+  centriolo: { titulo: '🔩 Centríolo', funcao: 'Organizar as fibras do fuso mitótico durante a divisão celular', desc: 'Essencial para a mitose e meiose. As fibras puxam os cromossomos para cada polo.', extra: '💡 Sem centríolo, os cromossomos não seriam distribuídos corretamente!' },
+  citoesqueleto: { titulo: '🏛️ Citoesqueleto', funcao: 'Dar forma, sustentação e ajudar no movimento e transporte', desc: 'É como um esqueleto interno. Mantém a forma da célula e ajuda no transporte de substâncias.', extra: '💡 É uma rede dinâmica — muda conforme a célula precisa!' }
+};
+
+function mostrarOrganela(id, btn) {
+  const o = organelas[id];
+  document.getElementById('det-titulo').textContent = o.titulo;
+  document.getElementById('det-funcao').textContent = o.funcao;
+  document.getElementById('det-desc').textContent = o.desc;
+  document.getElementById('det-extra').textContent = o.extra;
+  const det = document.getElementById('organela-detalhe');
+  det.className = 'organela-detalhe visivel';
+  document.querySelectorAll('.organela-btn').forEach(b => b.classList.remove('ativo'));
+  btn.classList.add('ativo');
+}
+
+const fases = {
+  interfase: '⏳ <strong>Interfase</strong> — A célula passa a maior parte do tempo aqui. Ela cresce (G1), duplica o DNA (fase S) e se prepara para dividir (G2).',
+  profase: '🌀 <strong>Prófase</strong> — Os cromossomos se condensam e aparecem. O núcleo começa a desaparecer. Os centríolos organizam o fuso mitótico.',
+  metafase: '📏 <strong>Metáfase</strong> — Os cromossomos ficam alinhados no meio da célula. É a fase mais fácil de contar cromossomos!',
+  anafase: '↔️ <strong>Anáfase</strong> — As cromátides irmãs se separam! O fuso puxa cada cromátide para um polo oposto da célula.',
+  telofase: '🔵 <strong>Telófase</strong> — Dois núcleos são formados (um em cada polo). Os cromossomos voltam a se descondensar.',
+  citocinese: '✂️ <strong>Citocinese</strong> — O citoplasma se divide. Resultado: <strong>2 células filhas idênticas</strong> à célula-mãe!'
+};
+
+function mostrarFase(id, btn) {
+  document.getElementById('fase-info').innerHTML = fases[id];
+  document.querySelectorAll('.fase-btn').forEach(b => b.classList.remove('ativo'));
+  btn.classList.add('ativo');
+}
+
+let acertos = 0;
+let respondidas = {};
+
+function responder(btn, correto, questao, msg) {
+  if (respondidas[questao]) return;
+  respondidas[questao] = true;
+  const opcoes = btn.parentElement.querySelectorAll('.opcao');
+  opcoes.forEach(o => o.style.pointerEvents = 'none');
+  const fb = document.getElementById('fb-' + questao);
+  if (correto) {
+    btn.classList.add('correta');
+    fb.textContent = '✅ ' + msg;
+    fb.className = 'feedback mostrar ok';
+    acertos++;
+  } else {
+    btn.classList.add('errada');
+    fb.textContent = '❌ ' + msg;
+    fb.className = 'feedback mostrar erro';
+  }
+  const total = 10;
+  const pct = Math.round((acertos / total) * 100);
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-pct').textContent = acertos + '/' + total;
+}
+
+const pares = { mo1:'mf1', mo2:'mf2', mo3:'mf3', mo4:'mf4', mo5:'mf5' };
+let selecionadoOrganela = null;
+let conectados = new Set();
+
+function selecionarMatch(id, tipo) {
+  if (conectados.has(id)) return;
+  const el = document.getElementById(id);
+  if (tipo === 'organela') {
+    if (selecionadoOrganela) document.getElementById(selecionadoOrganela).classList.remove('selecionado');
+    selecionadoOrganela = id;
+    el.classList.add('selecionado');
+    document.getElementById('matching-msg').textContent = '✅ Organela selecionada! Agora clique na função.';
+  } else {
+    if (!selecionadoOrganela) { document.getElementById('matching-msg').textContent = '⬅️ Primeiro selecione uma organela!'; return; }
+    const correto = pares[selecionadoOrganela] === id;
+    const mo = document.getElementById(selecionadoOrganela);
+    const mf = document.getElementById(id);
+    if (correto) {
+      mo.classList.remove('selecionado'); mo.classList.add('conectado');
+      mf.classList.add('conectado');
+      mo.onclick = null; mf.onclick = null;
+      conectados.add(selecionadoOrganela); conectados.add(id);
+      document.getElementById('matching-msg').textContent = conectados.size === 10 ? '🏆 Parabéns! Todas corretas!' : '🎉 Correto! Continue!';
+    } else {
+      mo.classList.add('errado'); mf.classList.add('errado');
+      document.getElementById('matching-msg').textContent = '❌ Incorreto! Tente novamente.';
+      setTimeout(() => { mo.classList.remove('errado','selecionado'); mf.classList.remove('errado'); document.getElementById('matching-msg').textContent = 'Tente outra combinação!'; }, 800);
+    }
+    selecionadoOrganela = null;
+  }
+}
+
+function resetMatch() {
+  selecionadoOrganela = null;
+  conectados = new Set();
+  ['mo1','mo2','mo3','mo4','mo5','mf1','mf2','mf3','mf4','mf5'].forEach(id => {
+    const el = document.getElementById(id);
+    el.className = 'matching-item';
+    const tipo = id.startsWith('mo') ? 'organela' : 'funcao';
+    el.onclick = function() { selecionarMatch(id, tipo); };
+  });
+  document.getElementById('matching-msg').textContent = 'Selecione uma organela para começar!';
+}
+
+const sections = document.querySelectorAll('section');
+const navLinks = document.querySelectorAll('nav a');
+window.addEventListener('scroll', () => {
+  let atual = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 100) atual = s.id; });
+  navLinks.forEach(a => { a.classList.toggle('ativo', a.getAttribute('href') === '#' + atual); });
+});
+</script>
+</body>
+</html>
